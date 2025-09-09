@@ -10,7 +10,7 @@ import DashboardPage from './pages/DashboardPage'
 import RoomsPage from './pages/RoomsPage'
 import BookingsPage from './pages/BookingsPage'
 import AdminPage from './pages/AdminPage'
-import UserPage from '/page/UserPage'
+import UserPage from './pages/UserPage'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
