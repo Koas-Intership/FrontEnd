@@ -1,8 +1,8 @@
 import { Layout, Menu } from 'antd'
 import { Link, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import LoginForm from '../components/LoginForm'
-import MyInfo from '../components/MyInfo'
+import LoginForm from '@/components/user/LoginForm'
+import MyInfo from '@/components/user/MyInfo'
 import { Button } from 'antd'
 import { useSelector } from 'react-redux'
 const { Header, Content } = Layout
@@ -22,7 +22,7 @@ export default function AppLayout({ children }) {
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Header style={{ display: 'flex', alignItems: 'center' }}>
-        <div style={{ color: 'white', fontWeight: 700, marginRight: 24 }}> Kaos </div>
+        <div style={{ color: 'white', fontWeight: 700, marginRight: 24 }}> Koas </div>
         {/* 메뉴 */}
         <Menu
           theme="dark"
@@ -31,7 +31,7 @@ export default function AppLayout({ children }) {
           items={[
             { key: '/', label: <Link to="/">대시보드</Link> },
             { key: '/rooms', label: <Link to="/rooms">회의실</Link> },
-            { key: '/bookings', label: <Link to="/bookings">예약</Link> },
+            { key: '/reservations', label: <Link to="/reservations">예약</Link> },
             { key: '/admin', label: <Link to="/admin">관리</Link> },
           ]}
           style={{ flex: 1 }}

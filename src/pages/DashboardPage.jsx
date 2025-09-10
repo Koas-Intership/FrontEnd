@@ -1,4 +1,10 @@
-// src/pages/DashboardPage.jsx
+import DashboardReservations from "@/components/reservation/DashboardReservations";
+
 export default function DashboardPage() {
-  return <div>오늘 예약 요약 / 공석 현황</div>
+  return (
+    <div style={{ padding: 20 }}>
+      <h1 style={{ marginBottom: 16 }}>회의실 현황</h1>
+      <DashboardReservations />
+    </div>
+  );
 }

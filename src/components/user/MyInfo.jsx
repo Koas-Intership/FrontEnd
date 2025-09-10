@@ -2,7 +2,7 @@
 import { Modal, Descriptions, Avatar, Button, Space, Divider, Tag } from "antd";
 import { UserOutlined, MailOutlined, IdcardOutlined } from "@ant-design/icons";
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../features/user/userSlice";
+import { logout } from "../../features/user/userSlice";
 
 export default function MyInfo({ open, onClose, me }) {
     const dispatch = useDispatch();

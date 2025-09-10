@@ -5,12 +5,11 @@ import { store } from './store'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { ConfigProvider } from 'antd'
 import koKR from 'antd/locale/ko_KR'
-import AppLayout from './ui/AppLayout'
-import DashboardPage from './pages/DashboardPage'
-import RoomsPage from './pages/RoomsPage'
-import BookingsPage from './pages/BookingsPage'
-import AdminPage from './pages/AdminPage'
-import UserPage from './pages/UserPage'
+import AppLayout from '@/ui/AppLayout'
+import DashboardPage from '@/pages/DashboardPage'
+import RoomsPage from '@/pages/RoomsPage'
+import ReservationsPage from '@/pages/ReservationsPage'
+import AdminPage from '@/pages/AdminPage'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -21,9 +20,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Routes>
               <Route path="/" element={<DashboardPage />} />
               <Route path="/rooms" element={<RoomsPage />} />
-              <Route path="/bookings" element={<BookingsPage />} />
+              <Route path="/reservations" element={<ReservationsPage />} />
               <Route path="/admin" element={<AdminPage />} />
-              <Route path="/user" element={<UserPage />} />
             </Routes>
           </AppLayout>
         </BrowserRouter>
