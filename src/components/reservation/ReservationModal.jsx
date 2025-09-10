@@ -1,13 +1,13 @@
 import { Modal, Form, Input, DatePicker, TimePicker, Button } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import dayjs from "dayjs";
-import { createReservationRequest } from "../features/reservation/reservationSlice";
+import { createReservationRequest } from "@/features/reservation/reservationsSlice";
 
 export default function ReservationModal({ open, onClose, room }) {
     //prop 확인
     console.log("[ReservationModal] Room: ", room);
     const dispatch = useDispatch();
-    const creating = useSelector((s) => s.reservation.creating);
+    const creating = useSelector((s) => s.reservations.creating);
 
     const initialDate = dayjs(); // 오늘
     const initialTime = [dayjs().hour(10).minute(0), dayjs().hour(11).minute(0)];

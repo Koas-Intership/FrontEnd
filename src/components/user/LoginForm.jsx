@@ -1,6 +1,6 @@
 import { Modal, Button, Input, Form } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { loginRequest } from "../features/user/userSlice";
+import { loginRequest } from "@/features/user/userSlice";
 
 export default function LoginForm({ open, onClose }) {
     const dispatch = useDispatch();

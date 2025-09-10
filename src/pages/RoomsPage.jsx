@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Button, Table, Space, message } from 'antd'
-import { fetchRoomsRequest } from '../features/rooms/roomsSlice'
-import ReservationModal from '../components/ReservationModal'
+import { fetchRoomsRequest } from '@/features/rooms/roomsSlice'
+import ReservationModal from '@/components/reservation/ReservationModal'
 
 export default function RoomsPage() {
   const dispatch = useDispatch()
   const { list, loading, error } = useSelector((s) => s.rooms)
-  const { creating, createError, lastCreated } = useSelector((s) => s.reservation)
+  const { creating, createError, lastCreated } = useSelector((s) => s.reservations)
   const { me } = useSelector((s) => s.user)
   const [isReservationOpen, setIsReservationOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(null)
