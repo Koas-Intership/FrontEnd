@@ -6,19 +6,19 @@ const initialState = {
   lastCreated: null,
 };
 
-const bookingsSlice = createSlice({
-  name: 'bookings',
+const reservationSlice = createSlice({
+  name: 'reservation',
   initialState,
   reducers: {
-    createBookingRequest(state, action) {
+    createReservationRequest(state, action) {
       state.creating = true;
       state.createError = null;
     },
-    createBookingSuccess(state, action) {
+    createReservationSuccess(state, action) {
       state.creating = false;
       state.lastCreated = action.payload;
     },
-    createBookingFailure(state, action) {
+    createReservationFailure(state, action) {
       state.creating = false;
       state.createError = action.payload || '에러';
     },
@@ -26,9 +26,9 @@ const bookingsSlice = createSlice({
 });
 
 export const {
-  createBookingRequest,
-  createBookingSuccess,
-  createBookingFailure,
-} = bookingsSlice.actions;
+  createReservationRequest,
+  createReservationSuccess,
+  createReservationFailure,
+} = reservationSlice.actions;
 
-export default bookingsSlice.reducer;
+export default reservationSlice.reducer;

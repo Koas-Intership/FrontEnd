@@ -22,7 +22,7 @@ export default function AppLayout({ children }) {
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Header style={{ display: 'flex', alignItems: 'center' }}>
-        <div style={{ color: 'white', fontWeight: 700, marginRight: 24 }}> Kaos 회의실 예약</div>
+        <div style={{ color: 'white', fontWeight: 700, marginRight: 24 }}> Kaos </div>
         {/* 메뉴 */}
         <Menu
           theme="dark"
