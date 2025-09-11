@@ -10,6 +10,7 @@ export default function SignUpForm() {
         email: '',
         password: '',
         name: '',
+        position: '',
         dept: '',
     });
 
@@ -18,6 +19,7 @@ export default function SignUpForm() {
         setForm((f) => ({ ...f, [name]: value }));
     };
 
+    // --- 제출 ---
     const onSubmit = (e) => {
         e.preventDefault();
         if (!form.email || !form.password || !form.name) {
@@ -59,10 +61,14 @@ export default function SignUpForm() {
                     <input id="name" name="name" value={form.name} onChange={onChange}
                         style={{ padding: 10, border: '1px solid #d1d5db', borderRadius: 8 }} />
                 </div>
-
                 <div style={{ display: 'grid', gap: 6 }}>
-                    <label htmlFor="dept">부서(선택)</label>
-                    <input id="dept" name="dept" value={form.dept} onChange={onChange}
+                    <label htmlFor="dept">직책</label>
+                    <input id="position" name="position" value={form.position} onChange={onChange}
+                        style={{ padding: 10, border: '1px solid #d1d5db', borderRadius: 8 }} />
+                </div>
+                <div style={{ display: 'grid', gap: 6 }}>
+                    <label htmlFor="dept">부서</label>
+                    <input id="department" name="department" value={form.department} onChange={onChange}
                         style={{ padding: 10, border: '1px solid #d1d5db', borderRadius: 8 }} />
                 </div>
             </div>

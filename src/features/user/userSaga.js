@@ -8,7 +8,7 @@ axios.defaults.withCredentials = true;
 // 서버 주소 사용 시:
 // axios.defaults.baseURL = "http://<YOUR_BACKEND_HOST>";
 
-const USE_MOCK = true; //개발 중 임시
+const USE_MOCK = false;
 
 /// --- 로그인 ---
 function apiLogin({ username, password }) {
@@ -59,7 +59,7 @@ function* handleLogin(action) {
 
 // --- 회원가입 ---
 function apiSignUp(form) {
-    return axios.post("/api/user/signup", form);
+    return axios.post("/api/user/regiter", form);
 }
 
 function* handleSignUp(action) {

@@ -18,7 +18,7 @@ export default function MyReservations() {
     const closeCancel = () => setCancelTarget(null);
 
     const handleConfirmCancel = () => {
-        // TODO: dispatch(cancelReservationRequest(cancelTarget.id))
+        dispatch(cancelReservationRequest(cancelTarget.id));
         closeCancel();
     };
 
