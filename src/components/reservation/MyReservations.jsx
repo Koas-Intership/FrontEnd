@@ -18,7 +18,7 @@ export default function MyReservations() {
     const closeCancel = () => setCancelTarget(null);
 
     const handleConfirmCancel = () => {
-        // TODO: dispatch(cancelReservationRequest(cancelTarget.id))
+        dispatch(cancelReservationRequest(cancelTarget.id));
         closeCancel();
     };
 
@@ -28,8 +28,7 @@ export default function MyReservations() {
 
     return (
         <div>
-            <h3>내 예약</h3>
-
+            <h3 style={{ marginLeft: 10 }}>내 예약</h3>
             <ul
                 style={{
                     listStyle: 'none',

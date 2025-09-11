@@ -63,8 +63,8 @@ export default function Reservation() {
     return (
         <div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <h3 style={{ margin: 0 }}>회의실 목록</h3>
-                <Button onClick={() => dispatch(fetchRoomsRequest())} loading={loading}>
+                <h3 style={{ marginLeft: 10 }}>회의실 목록</h3>
+                <Button onClick={() => dispatch(fetchRoomsRequest())} loading={loading} style={{ border: 'none', backgroundColor: 'none' }}>
                     새로고침
                 </Button>
             </div>

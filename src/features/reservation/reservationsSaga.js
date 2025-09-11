@@ -10,9 +10,12 @@ import {
   fetchAllReservationsRequest,
   fetchAllReservationsSuccess,
   fetchAllReservationsFailure,
+  cancelReservationRequest,
+  cancelReservationSuccess,
+  cancelReservationFailure,
 } from './reservationsSlice';
 
-const USE_MOCK = true; // 개발 중 임시
+const USE_MOCK = false;
 
 // --- 예약 생성 API ---
 function createReservationAPI(payload) {
@@ -21,12 +24,16 @@ function createReservationAPI(payload) {
 
 // --- 내 예약 불러오기 API ---
 function fetchMyReservationsAPI(userId) {
-  return api.get(`/api/user/${userId}/reservations`);
+  return api.get('/api/meeting-room/reservation/mine');
 }
 
 // --- 전체 예약 불러오기 API ---
 function fetchAllReservationsAPI() {
-  return api.get('/api/meeting-room/reservations');
+  return api.get('/api/meeting-room/reservation/all');
+}
+// --- 예약 취소 API ---
+function cancelReservationAPI(reservationId) {
+  return api.delete(`/api/meeting-room/reservation/${reservationId}`);
 }
 
 // --- 예약 생성 사가 ---
@@ -80,9 +87,36 @@ function* fetchAllReservationsWorker() {
   }
 }
 
+// --- 예약 취소 사가 ---
+// --- 예약 취소 사가 ---
+function* cancelReservationWorker(action) {
+  const id = action.payload; // 취소할 예약 id
+  try {
+    if (USE_MOCK) {
+      yield delay(300);
+      yield put(cancelReservationSuccess(id));
+      return;
+    }
+    const res = yield call(cancelReservationAPI, id);
+
+    // 서버 응답이 204(No Content)면 본문이 없음 → 요청 id로 성공 처리
+    const returnedId = res?.data?.id ?? id;
+    yield put(cancelReservationSuccess(returnedId));
+  } catch (err) {
+    yield put(
+      cancelReservationFailure({
+        id,
+        error: err?.response?.data?.message || err.message || '취소 실패',
+      })
+    );
+  }
+}
+
+
 // --- root saga export ---
 export default function* reservationSaga() {
   yield takeLatest(createReservationRequest.type, createReservationWorker);
   yield takeLatest(fetchMyReservationsRequest.type, fetchMyReservationsWorker);
   yield takeLatest(fetchAllReservationsRequest.type, fetchAllReservationsWorker);
+  yield takeLatest(cancelReservationRequest.type, cancelReservationWorker);
 }

@@ -1,15 +1,16 @@
 import { call, put, takeLatest, delay } from "redux-saga/effects";
 import axios from "axios";
 import { message } from "antd";
-import { loginRequest, loginSuccess, loginFailure, logout } from "./userSlice";
+import { loginRequest, loginSuccess, loginFailure, logout, signUpRequest, signUpSuccess, signUpFailure, } from "./userSlice";
 
 // axios 기본 설정 (쿠키 세션 쓰면 withCredentials true)
 axios.defaults.withCredentials = true;
 // 서버 주소 사용 시:
 // axios.defaults.baseURL = "http://<YOUR_BACKEND_HOST>";
 
-const USE_MOCK_AUTH = true; // ✅ 개발 중 임시
+const USE_MOCK = false;
 
+/// --- 로그인 ---
 function apiLogin({ username, password }) {
     return axios.post("/api/user/login", { username, password });
 }
@@ -17,7 +18,7 @@ function apiLogin({ username, password }) {
 function* handleLogin(action) {
     const { username, password } = action.payload;
     try {
-        if (USE_MOCK_AUTH === true) {
+        if (USE_MOCK === true) {
             yield delay(300);
             const user = { username, name: username, email: `${username}@example.com`, role: "사원" };
             const token = "dev-mock-token";
@@ -35,7 +36,6 @@ function* handleLogin(action) {
         //백엔드 연결 후
         const res = yield call(apiLogin, { username, password });
         // 서버 응답 형태에 맞춰 파싱
-        // 예시1) { user, token }
         const { user, token } = res.data;
 
         // (JWT 쓸 때) axios 헤더에 토큰 심기
@@ -57,6 +57,43 @@ function* handleLogin(action) {
     }
 }
 
+// --- 회원가입 ---
+function apiSignUp(form) {
+    return axios.post("/api/user/regiter", form);
+}
+
+function* handleSignUp(action) {
+    try {
+        if (USE_MOCK) {
+            yield delay(300);
+            const user = { name: action.payload.name || "신규 사용자", email: action.payload.email, role: "사원" };
+            const token = "dev-mock-token-signup";
+            axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+            localStorage.setItem("auth_token", token);
+
+            yield put(signUpSuccess({ user, token }));
+            message.success("회원가입이 완료되었습니다.");
+            return;
+        }
+
+        const res = yield call(apiSignUp, action.payload);
+        const { user, token } = res.data;
+
+        if (token) {
+            axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+            localStorage.setItem("auth_token", token);
+        }
+
+        yield put(signUpSuccess({ user, token }));
+        message.success("회원가입이 완료되었습니다.");
+    } catch (err) {
+        const msg = err?.response?.data?.message || err?.message || "회원가입에 실패했습니다.";
+        yield put(signUpFailure(msg));
+        message.error(msg);
+    }
+}
+
+// --- 로그아웃 ---
 function* handleLogout() {
     try {
         // 세션 기반이면 서버에 로그아웃 요청 필요할 수 있음:
@@ -70,5 +107,6 @@ function* handleLogout() {
 
 export default function* userSaga() {
     yield takeLatest(loginRequest.type, handleLogin);
+    yield takeLatest(signUpRequest.type, handleSignUp);
     yield takeLatest(logout.type, handleLogout);
 }

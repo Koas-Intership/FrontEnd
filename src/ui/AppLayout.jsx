@@ -1,62 +1,70 @@
-import { Layout, Menu } from 'antd'
-import { Link, useLocation } from 'react-router-dom'
+// AppLayout.jsx
+import { Layout, Menu, Image } from 'antd'
+import { Link, Router, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import LoginForm from '@/components/user/LoginForm'
 import MyInfo from '@/components/user/MyInfo'
-import { Button } from 'antd'
 import { useSelector } from 'react-redux'
+
 const { Header, Content } = Layout
 
 export default function AppLayout({ children }) {
   const { pathname } = useLocation()
   const selectedKey = pathname === '/' ? '/' : '/' + pathname.split('/')[1]
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [isInfoOpen, setIsInfoOpen] = useState(false);
-  const me = useSelector((s) => s.user.me);
+  const [isLoginOpen, setIsLoginOpen] = useState(false)
+  const [isInfoOpen, setIsInfoOpen] = useState(false)
+  const me = useSelector((s) => s.user.me)
 
-  // 로그인 성공하면 모달 닫기
   useEffect(() => {
-    if (me && isLoginOpen) setIsLoginOpen(false);
-  }, [me, isLoginOpen]);
+    if (me && isLoginOpen) setIsLoginOpen(false)
+  }, [me, isLoginOpen])
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Header style={{ display: 'flex', alignItems: 'center' }}>
-        <div style={{ color: 'white', fontWeight: 700, marginRight: 24 }}> Koas </div>
-        {/* 메뉴 */}
+    <Layout style={{ minHeight: '100vh', minWidth: 800 }}>
+      <Header style={{ display: 'flex', alignItems: 'center', backgroundColor: 'white' }}>
+        <Link to="/">
+          <img
+            src="/img/logo.svg"
+            alt="Koas"
+            style={{ width: "100px", cursor: "pointer", display: "block" }}
+          />
+        </Link>
+
         <Menu
-          theme="dark"
+          theme='light'
           mode="horizontal"
           selectedKeys={[selectedKey]}
-          items={[
-            { key: '/', label: <Link to="/">대시보드</Link> },
-            { key: '/rooms', label: <Link to="/rooms">회의실</Link> },
-            { key: '/reservations', label: <Link to="/reservations">예약</Link> },
-            { key: '/admin', label: <Link to="/admin">관리</Link> },
-          ]}
-          style={{ flex: 1 }}
-        />
-
-        {/* 로그인 버튼 (오른쪽 끝으로) */}
-        {me ?
-          <Button
-            type='primary'
-            onClick={() => setIsInfoOpen(true)}
-            style={{ marginLeft: 'auto' }}>
-            내 정보
-          </Button>
-          :
-          <Button
-            type="primary"
-            onClick={() => setIsLoginOpen(true)}
-            style={{ marginLeft: 'auto' }}
-          >
-            로그인
-          </Button>
-        }
-
+          style={{ flex: 1, borderBottom: 'none', marginLeft: '10%' }}
+        >
+          <Menu.Item key="/"><Link to="/">대시보드</Link></Menu.Item>
+          <Menu.Item key="/rooms"><Link to="/rooms">회의실</Link></Menu.Item>
+          <Menu.Item key="/reservations"><Link to="/reservations">예약</Link></Menu.Item>
+          <Menu.Item key="/admin"><Link to="/admin">관리</Link></Menu.Item>
+          {!me ? (
+            <>
+              <Menu.Item key="/signup" style={{ marginLeft: 'auto' }}>
+                <Link to="/signup">회원가입</Link>
+              </Menu.Item>
+              <Menu.Item key="login" onClick={() => setIsLoginOpen(true)}>
+                로그인
+              </Menu.Item>
+            </>
+          ) : (
+            <>
+              <Menu.Item
+                key="myinfo"
+                onClick={() => setIsInfoOpen(true)}
+                style={{ marginLeft: 'auto' }}   // ← 여기서 오른쪽 밀기
+              >
+                내 정보
+              </Menu.Item>
+            </>
+          )}
+        </Menu>
       </Header>
+
       <Content style={{ padding: 24 }}>{children}</Content>
+
       {/* 모달 */}
       <LoginForm open={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
       <MyInfo open={isInfoOpen} me={me} onClose={() => setIsInfoOpen(false)} />

@@ -3,11 +3,11 @@ import { put, takeLatest, delay } from "redux-saga/effects";
 import { api } from '../../lib/api';
 import { fetchRoomsRequest, fetchRoomsSuccess, fetchRoomsFailure } from "./roomsSlice";
 
-const USE_MOCK_AUTH = true; // ✅ 개발 중 임시
+const USE_MOCK = false;
 
 function* fetchRooms() {
   try {
-    if (USE_MOCK_AUTH) {
+    if (USE_MOCK) {
       yield delay(300); // 로딩 흉내
       const dummyRooms = [
         { id: 1, name: "회의실 A", capacity: 6, floor: 3 },
@@ -19,7 +19,7 @@ function* fetchRooms() {
     }
 
     //실제
-    const res = yield call(api.get('/rooms'));
+    const res = yield call(api.get('/api/meeting-room/all'));
     yield put(fetchRoomsSuccess(res.data));
 
   } catch (err) {
