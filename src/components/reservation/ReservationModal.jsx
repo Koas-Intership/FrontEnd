@@ -20,8 +20,7 @@ export default function ReservationModal({ open, onClose, room }) {
             date: values.date.format("YYYY-MM-DD"),
             start: values.timeRange[0].format("HH:mm"),
             end: values.timeRange[1].format("HH:mm"),
-            title: values.title,
-            memo: values.memo || "",
+            purpose: values.title,
         };
         console.log("[UI] dispatch payload →", payload);  // ✅ 반드시 찍혀야 함
         dispatch(createReservationRequest(payload));
@@ -68,10 +67,6 @@ export default function ReservationModal({ open, onClose, room }) {
                     rules={[{ required: true, message: "시간을 선택하세요." }]}
                 >
                     <TimePicker.RangePicker format="HH:mm" minuteStep={5} style={{ width: "100%" }} />
-                </Form.Item>
-
-                <Form.Item label="메모" name="memo">
-                    <Input.TextArea placeholder="비고/준비물 등" rows={3} />
                 </Form.Item>
 
                 <Button htmlType="submit" type="primary" block loading={creating}>
