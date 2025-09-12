@@ -39,7 +39,7 @@ function* handleLogin(action) {
 
         // (JWT 쓸 때) axios 헤더에 토큰 심기
         if (token) {
-            axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+            api.defaults.headers.common.Authorization = `Bearer ${token}`;
             // 필요하면 localStorage 저장
             localStorage.setItem("auth_token", token);
         }
@@ -67,7 +67,7 @@ function* handleSignUp(action) {
             yield delay(300);
             const user = { name: action.payload.name || "신규 사용자", email: action.payload.email, role: "사원" };
             const token = "dev-mock-token-signup";
-            axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+            api.defaults.headers.common.Authorization = `Bearer ${token}`;
             localStorage.setItem("auth_token", token);
 
             yield put(signUpSuccess({ user, token }));
@@ -79,7 +79,7 @@ function* handleSignUp(action) {
         const { user, token } = res.data;
 
         if (token) {
-            axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+            api.defaults.headers.common.Authorization = `Bearer ${token}`;
             localStorage.setItem("auth_token", token);
         }
 
@@ -99,7 +99,7 @@ function* handleLogout() {
         // yield call(() => axios.post("/api/auth/logout"));
     } finally {
         // JWT일 때 토큰 제거
-        delete axios.defaults.headers.common.Authorization;
+        delete api.defaults.headers.common.Authorization;
         localStorage.removeItem("auth_token");
     }
 }
