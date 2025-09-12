@@ -2,17 +2,16 @@ import { call, put, takeLatest, delay } from "redux-saga/effects";
 import axios from "axios";
 import { message } from "antd";
 import { loginRequest, loginSuccess, loginFailure, logout, signUpRequest, signUpSuccess, signUpFailure, } from "./userSlice";
+import { api } from "../../lib/api";
 
 // axios 기본 설정 (쿠키 세션 쓰면 withCredentials true)
 axios.defaults.withCredentials = true;
-// 서버 주소 사용 시:
-// axios.defaults.baseURL = "http://<YOUR_BACKEND_HOST>";
 
 const USE_MOCK = false;
 
 /// --- 로그인 ---
 function apiLogin({ username, password }) {
-    return axios.post("/api/user/login", { username, password });
+    return api.post("/api/user/login", { username, password });
 }
 
 function* handleLogin(action) {
@@ -59,7 +58,7 @@ function* handleLogin(action) {
 
 // --- 회원가입 ---
 function apiSignUp(form) {
-    return axios.post("/api/user/register", form);
+    return api.post("/api/user/register", form);
 }
 
 function* handleSignUp(action) {
