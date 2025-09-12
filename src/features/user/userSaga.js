@@ -59,7 +59,7 @@ function* handleLogin(action) {
 
 // --- 회원가입 ---
 function apiSignUp(form) {
-    return axios.post("/api/user/regiter", form);
+    return axios.post("/api/user/register", form);
 }
 
 function* handleSignUp(action) {
