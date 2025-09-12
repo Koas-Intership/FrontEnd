@@ -75,12 +75,12 @@ export default function SignUpForm() {
                 </div>
                 <div style={{ display: 'grid', gap: 6 }}>
                     <label htmlFor="dept">번호</label>
-                    <input id="department" name="phoneNumber" value={form.department} onChange={onChange}
+                    <input id="phoneNumber" name="phoneNumber" value={form.department} onChange={onChange}
                         style={{ padding: 10, border: '1px solid #d1d5db', borderRadius: 8 }} />
                 </div>
                 <div style={{ display: 'grid', gap: 6 }}>
                     <label htmlFor="dept">생년월일(yyyymmdd)</label>
-                    <input id="department" name="birthDate" value={form.department} onChange={onChange}
+                    <input id="birthDate" name="birthDate" value={form.department} onChange={onChange}
                         style={{ padding: 10, border: '1px solid #d1d5db', borderRadius: 8 }} />
                 </div>
             </div>
