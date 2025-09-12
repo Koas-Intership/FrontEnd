@@ -12,6 +12,8 @@ export default function SignUpForm() {
         name: '',
         position: '',
         dept: '',
+        phoneNumber: '',
+        birthDate: '',
     });
 
     const onChange = (e) => {
@@ -69,6 +71,16 @@ export default function SignUpForm() {
                 <div style={{ display: 'grid', gap: 6 }}>
                     <label htmlFor="dept">부서</label>
                     <input id="department" name="department" value={form.department} onChange={onChange}
+                        style={{ padding: 10, border: '1px solid #d1d5db', borderRadius: 8 }} />
+                </div>
+                <div style={{ display: 'grid', gap: 6 }}>
+                    <label htmlFor="dept">번호</label>
+                    <input id="department" name="phoneNumber" value={form.department} onChange={onChange}
+                        style={{ padding: 10, border: '1px solid #d1d5db', borderRadius: 8 }} />
+                </div>
+                <div style={{ display: 'grid', gap: 6 }}>
+                    <label htmlFor="dept">생년월일(yyyymmdd)</label>
+                    <input id="department" name="birthDate" value={form.department} onChange={onChange}
                         style={{ padding: 10, border: '1px solid #d1d5db', borderRadius: 8 }} />
                 </div>
             </div>

@@ -58,6 +58,7 @@ function* handleLogin(action) {
 
 // --- 회원가입 ---
 function apiSignUp(form) {
+    console.log('[userSaga] form', form);
     return api.post("/api/user/register", form);
 }
 
@@ -74,7 +75,7 @@ function* handleSignUp(action) {
             message.success("회원가입이 완료되었습니다.");
             return;
         }
-
+        console.log('[userSaga] payload: ', action.payload);
         const res = yield call(apiSignUp, action.payload);
         const { user, token } = res.data;
 
