@@ -11,7 +11,7 @@ export default function SignUpForm() {
         password: '',
         name: '',
         position: '',
-        dept: '',
+        department: '',
         phoneNumber: '',
         birthDate: '',
     });
@@ -64,7 +64,7 @@ export default function SignUpForm() {
                         style={{ padding: 10, border: '1px solid #d1d5db', borderRadius: 8 }} />
                 </div>
                 <div style={{ display: 'grid', gap: 6 }}>
-                    <label htmlFor="dept">직책</label>
+                    <label htmlFor="position">직책</label>
                     <input id="position" name="position" value={form.position} onChange={onChange}
                         style={{ padding: 10, border: '1px solid #d1d5db', borderRadius: 8 }} />
                 </div>
