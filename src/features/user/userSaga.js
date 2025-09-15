@@ -5,7 +5,7 @@ import { loginRequest, loginSuccess, loginFailure, logout, signUpRequest, signUp
 import { api } from "../../lib/api";
 
 // axios 기본 설정 (쿠키 세션 쓰면 withCredentials true)
-axios.defaults.withCredentials = true;
+axios.defaults.withCredentials = false;
 
 const USE_MOCK = false;
 
@@ -50,10 +50,13 @@ function* handleLogin(action) {
         message.success(`${user?.name || "사용자"}님, 환영합니다!`);
 
     } catch (err) {
-        const msg =
-            err?.response?.data?.message ||
-            err?.message ||
-            "아이디 또는 비밀번호를 확인해 주세요.";
+        console.log("[login error]", {
+            status: err?.response?.status,
+            headers: err?.response?.headers,
+            data: err?.response?.data,
+        });
+        const msg = err?.response?.data?.message || err?.message || "아이디 또는 비밀번호를 확인해 주세요.";
+        yield put(loginFailure(msg));
         yield put(loginFailure(msg));
         message.error(msg);
     }
