@@ -40,6 +40,7 @@ function* handleLogin(action) {
         if (accessToken) localStorage.setItem("access_token", accessToken);
         if (refreshToken) localStorage.setItem("refresh_token", refreshToken);
 
+        //내 정보 가져오기
         const meRes = yield call(api.get("/api/user/me"));
         const user = meRes.data; // {id, email, name, role...}
         console.log("[userSaga] login - meRes.data : ", meRes.data);

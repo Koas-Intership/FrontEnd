@@ -23,7 +23,7 @@ const userSlice = createSlice({
         },
         loginSuccess: (state, action) => {
             state.loading = false;
-            state.me = action.payload.user;
+            state.me = action.payload.me ?? action.payload.user ?? null;
             state.token = action.payload.token ?? null;
             state.error = null;
         },
@@ -44,7 +44,7 @@ const userSlice = createSlice({
         },
         signUpSuccess: (state, action) => {
             state.signingUp = false;
-            state.me = action.payload.user ?? null; // 가입 성공 시 자동 로그인이라면
+            state.me = action.payload.me ?? action.payload.user ?? null;
             state.token = action.payload.token ?? null;
         },
         signUpFailure: (state, action) => {
