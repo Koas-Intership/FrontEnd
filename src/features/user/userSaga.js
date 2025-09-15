@@ -11,6 +11,7 @@ const USE_MOCK = false;
 
 /// --- 로그인 ---
 function apiLogin({ email, password }) {
+    console.log("[userSaga] apiLogin : ", email, password);
     return api.post("/api/user/login", { email, password });
 }
 
