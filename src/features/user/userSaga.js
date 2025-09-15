@@ -12,54 +12,51 @@ const USE_MOCK = false;
 /// --- 로그인 ---
 function apiLogin({ email, password }) {
     console.log("[userSaga] apiLogin : ", email, password);
-    return api.post("/api/user/login", { email, password });
+    return api.post(
+        "/api/user/login",
+        { email, password },
+        { headers: { "Content-Type": "application/json" } }
+    );
 }
 
 function* handleLogin(action) {
     const { email, password } = action.payload;
     console.log("[userSaga] action.payload : ", action.payload);
-    try {
-        if (USE_MOCK === true) {
-            yield delay(300);
-            const user = { username, name: username, email: `${username}@example.com`, role: "사원" };
-            const token = "dev-mock-token";
-
-            yield put(loginSuccess({ user, token }));
-
-            try {
-                message.success(`${user.name}님, 환영합니다!`);
-            } catch (mErr) {
-                message.error("관리자에게 문의주세요.");
-            }
-            return;
-        }
-
-        const res = yield call(apiLogin, { email, password });
-        const { accessToken, refreshToken } = res.data;
-        console.log("[userSaga] login - res.data : ", res.data);
-
-        if (accessToken) localStorage.setItem("access_token", accessToken);
-        if (refreshToken) localStorage.setItem("refresh_token", refreshToken);
-
-        //내 정보 가져오기
-        const meRes = yield call([api, api.get], "/api/user/me");
-        const user = meRes.data; // {id, email, name, role...}
-        console.log("[userSaga] login - meRes.data : ", meRes.data);
-
-        yield put(loginSuccess({ user: user || null, token: accessToken }));
-        message.success(`${user?.name || "사용자"}님, 환영합니다!`);
-
-    } catch (err) {
-        console.log("[login error]", {
-            status: err?.response?.status,
-            headers: err?.response?.headers,
-            data: err?.response?.data,
-        });
-        const msg = err?.response?.data?.message || err?.message || "아이디 또는 비밀번호를 확인해 주세요.";
-        yield put(loginFailure(msg));
-        yield put(loginFailure(msg));
-        message.error(msg);
+    if (USE_MOCK) {
+        yield delay(300);
+        const user = { name: email.split('@')[0], email, role: "사원" };
+        const token = "dev-mock-token";
+        yield put(loginSuccess({ user, token }));
+        message.success(`${user.name}님, 환영합니다!`);
+        return;
     }
+
+    const res = yield call(apiLogin, { email, password });
+    const { accessToken, refreshToken } = res.data;
+    console.log("[userSaga] login - res.data : ", res.data);
+
+    if (accessToken) localStorage.setItem("access_token", accessToken);
+    if (refreshToken) localStorage.setItem("refresh_token", refreshToken);
+
+    //내 정보 가져오기
+    const meRes = yield call([api, api.get], "/api/user/me");
+    const user = meRes.data; // {id, email, name, role...}
+    console.log("[userSaga] login - meRes.data : ", meRes.data);
+
+    yield put(loginSuccess({ user: user || null, token: accessToken }));
+    message.success(`${user?.name || "사용자"}님, 환영합니다!`);
+
+} catch (err) {
+    console.log("[login error]", {
+        status: err?.response?.status,
+        headers: err?.response?.headers,
+        data: err?.response?.data,
+    });
+    const msg = err?.response?.data?.message || err?.message || "아이디 또는 비밀번호를 확인해 주세요.";
+    yield put(loginFailure(msg));
+    yield put(loginFailure(msg));
+    message.error(msg);
+}
 }
 
 // --- 회원가입 ---
