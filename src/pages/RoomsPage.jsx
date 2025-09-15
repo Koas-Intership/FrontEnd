@@ -6,15 +6,12 @@ import ReservationModal from '@/components/reservation/ReservationModal'
 
 export default function RoomsPage() {
   const dispatch = useDispatch()
-  const { list, loading, error } = useSelector((s) => s.rooms)
-  const { creating, createError, lastCreated } = useSelector((s) => s.reservations)
-  const { me } = useSelector((s) => s.user)
+  const { list, loading, error } = useSelector((s) => s.rooms);
+  const { creating, createError, lastCreated } = useSelector((s) => s.reservations);
+  const { me } = useSelector((s) => s.user);
+  const token = useSelector((s) => s.token);
   const [isReservationOpen, setIsReservationOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(null)
-
-  //로그
-  console.log("[RoomsPage]reservation: ", list);
-  console.log("[RoomsPage]me: ", me);
 
   useEffect(() => {
     console.log("[RoomsPage] fetchRoomsRequest start");

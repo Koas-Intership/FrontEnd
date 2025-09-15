@@ -63,6 +63,7 @@ function* fetchMyReservationsWorker() {
     }
     const res = yield call(fetchMyReservationsAPI);
     yield put(fetchMyReservationsSuccess(res.data));
+    console.log("[reservationsSaga] 내 예약 응답:", res.data);
   } catch (err) {
     yield put(fetchMyReservationsFailure(err?.response?.data?.message || err.message));
   }

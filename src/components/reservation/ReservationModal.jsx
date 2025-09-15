@@ -1,11 +1,9 @@
-import { Modal, Form, Input, DatePicker, TimePicker, Button } from "antd";
+import { Modal, Form, Input, DatePicker, TimePicker, Button, InputNumber } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import dayjs from "dayjs";
 import { createReservationRequest } from "@/features/reservation/reservationsSlice";
 
 export default function ReservationModal({ open, onClose, room }) {
-    //prop 확인
-    console.log("[ReservationModal] Room: ", room);
     const dispatch = useDispatch();
     const creating = useSelector((s) => s.reservations.creating);
 
@@ -16,10 +14,11 @@ export default function ReservationModal({ open, onClose, room }) {
         const date = values.date.format("YYYY-MM-DD");
         const [start, end] = values.timeRange;
         const payload = {
-            roomId: room?.id,
-            date: values.date.format("YYYY-MM-DD"),
-            start: values.timeRange[0].format("HH:mm"),
-            end: values.timeRange[1].format("HH:mm"),
+            meetingRoomId: room?.id,
+            number: Number(values.number),
+            reservationDate: values.date.format("YYYY-MM-DD"),
+            startTime: values.timeRange[0].format("HH:mm"),
+            endTime: values.timeRange[1].format("HH:mm"),
             purpose: values.title,
         };
         console.log("[UI] dispatch payload →", payload);  // ✅ 반드시 찍혀야 함
@@ -51,6 +50,32 @@ export default function ReservationModal({ open, onClose, room }) {
                     rules={[{ required: true, message: "회의 제목을 입력하세요." }]}
                 >
                     <Input placeholder="예: 월 매출 보고" />
+                </Form.Item>
+
+                <Form.Item
+                    label="회의 인원"
+                    name="number"
+                    rules={[
+                        { required: true, message: "회의 인원을 입력하세요." },
+                        ({ }) => ({
+                            validator(_, value) {
+                                if (value == null) return Promise.resolve();
+                                const max = room?.capacity ?? Infinity;
+                                const ok = Number.isInteger(value) && value >= 1 && value <= max;
+                                return ok
+                                    ? Promise.resolve()
+                                    : Promise.reject(new Error(`1 ~ ${max} 사이의 정수를 입력하세요.`));
+                            },
+                        }),
+                    ]}
+                >
+                    <InputNumber
+                        style={{ width: "100%" }}
+                        min={1}
+                        max={room?.capacity}
+                        step={1}
+                        precision={0}
+                    />
                 </Form.Item>
 
                 <Form.Item

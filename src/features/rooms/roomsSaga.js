@@ -1,9 +1,11 @@
 // roomsSaga.js
-import { put, takeLatest, delay } from "redux-saga/effects";
+import { call, put, takeLatest, delay } from "redux-saga/effects";
 import { api } from '../../lib/api';
 import { fetchRoomsRequest, fetchRoomsSuccess, fetchRoomsFailure } from "./roomsSlice";
 
 const USE_MOCK = false;
+
+const apiFetchRooms = () => api.get("/api/meeting-room/all");
 
 function* fetchRooms() {
   try {
@@ -18,7 +20,7 @@ function* fetchRooms() {
       return;
     }
 
-    const res = yield call(api.get('/api/meeting-room/all'));
+    const res = yield call(apiFetchRooms);
     console.log("[roomsSaga] rooms data: ", res.data);
     yield put(fetchRoomsSuccess(res.data));
 
