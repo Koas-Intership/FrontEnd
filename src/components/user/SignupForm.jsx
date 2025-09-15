@@ -69,18 +69,18 @@ export default function SignUpForm() {
                         style={{ padding: 10, border: '1px solid #d1d5db', borderRadius: 8 }} />
                 </div>
                 <div style={{ display: 'grid', gap: 6 }}>
-                    <label htmlFor="dept">부서</label>
+                    <label htmlFor="department">부서</label>
                     <input id="department" name="department" value={form.department} onChange={onChange}
                         style={{ padding: 10, border: '1px solid #d1d5db', borderRadius: 8 }} />
                 </div>
                 <div style={{ display: 'grid', gap: 6 }}>
-                    <label htmlFor="dept">번호</label>
-                    <input id="phoneNumber" name="phoneNumber" value={form.department} onChange={onChange}
+                    <label htmlFor="phoneNumber">번호</label>
+                    <input id="phoneNumber" name="phoneNumber" value={form.phoneNumber} onChange={onChange}
                         style={{ padding: 10, border: '1px solid #d1d5db', borderRadius: 8 }} />
                 </div>
                 <div style={{ display: 'grid', gap: 6 }}>
-                    <label htmlFor="dept">생년월일(yyyymmdd)</label>
-                    <input id="birthDate" name="birthDate" value={form.department} onChange={onChange}
+                    <label htmlFor="birthDate">생년월일(yyyymmdd)</label>
+                    <input id="birthDate" name="birthDate" value={form.birthDate} onChange={onChange}
                         style={{ padding: 10, border: '1px solid #d1d5db', borderRadius: 8 }} />
                 </div>
             </div>
