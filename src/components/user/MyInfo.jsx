@@ -25,7 +25,7 @@ export default function MyInfo({ open, onClose, me }) {
                         <div style={{ fontSize: 18, fontWeight: 700 }}>
                             {field(me?.name || me?.username, "Guest")}
                         </div>
-                        <div style={{ color: "#888" }}>{field(me?.email, "이메일 미등록")}</div>
+                        <div style={{ color: "#888" }}>{me?.email}</div>
                     </div>
                 </Space>
 
@@ -38,10 +38,6 @@ export default function MyInfo({ open, onClose, me }) {
                     labelStyle={{ width: 100, fontWeight: 600 }}
                     contentStyle={{ wordBreak: "break-all" }}
                 >
-                    <Descriptions.Item label={<><MailOutlined /> 이메일</>}>
-                        {field(me?.email, "—")}
-                    </Descriptions.Item>
-
                     <Descriptions.Item label="직함">
                         {me?.position ? <Tag color="blue">{me.position}</Tag> : "—"}
                     </Descriptions.Item>

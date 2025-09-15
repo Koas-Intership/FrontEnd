@@ -17,9 +17,9 @@ export default function RoomsPage() {
   console.log("[RoomsPage]me: ", me);
 
   useEffect(() => {
-    dispatch(fetchRoomsRequest())
-    console.log("[RoomsPage] fetchRoomsRequest start")
-  }, [dispatch])
+    console.log("[RoomsPage] fetchRoomsRequest start");
+    if (token) dispatch(fetchRoomsRequest());
+  }, [dispatch, token]);
 
   useEffect(() => {
     if (error) message.error(error)
