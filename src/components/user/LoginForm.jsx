@@ -7,7 +7,7 @@ export default function LoginForm({ open, onClose }) {
     const loading = useSelector((s) => s.user.loading);
 
     const onFinish = (values) => {
-        const { username, password } = values;
+        const { email, password } = values;
         dispatch(loginRequest(values));
         onClose?.();
     };
@@ -22,11 +22,11 @@ export default function LoginForm({ open, onClose }) {
         >
             <Form layout="vertical" onFinish={onFinish} autoComplete="off">
                 <Form.Item
-                    label="아이디"
-                    name="username"
-                    rules={[{ required: true, message: "아이디를 입력하세요." }]}
+                    label="이메일"
+                    name="email"
+                    rules={[{ required: true, message: "이메일을 입력하세요." }]}
                 >
-                    <Input placeholder="아이디" />
+                    <Input placeholder="이메일" />
                 </Form.Item>
 
                 <Form.Item

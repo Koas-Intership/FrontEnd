@@ -10,12 +10,12 @@ axios.defaults.withCredentials = true;
 const USE_MOCK = false;
 
 /// --- 로그인 ---
-function apiLogin({ username, password }) {
-    return api.post("/api/user/login", { username, password });
+function apiLogin({ email, password }) {
+    return api.post("/api/user/login", { email, password });
 }
 
 function* handleLogin(action) {
-    const { username, password } = action.payload;
+    const { email, password } = action.payload;
     try {
         if (USE_MOCK === true) {
             yield delay(300);
@@ -32,20 +32,15 @@ function* handleLogin(action) {
             return;
         }
 
-        //백엔드 연결 후
-        const res = yield call(apiLogin, { username, password });
-        // 서버 응답 형태에 맞춰 파싱
+        const res = yield call(apiLogin, { email, password });
         const { user, token } = res.data;
-
-        // (JWT 쓸 때) axios 헤더에 토큰 심기
         if (token) {
             api.defaults.headers.common.Authorization = `Bearer ${token}`;
-            // 필요하면 localStorage 저장
             localStorage.setItem("auth_token", token);
         }
-
         yield put(loginSuccess({ user, token }));
         message.success(`${user?.name || "사용자"}님, 환영합니다!`);
+
     } catch (err) {
         const msg =
             err?.response?.data?.message ||
