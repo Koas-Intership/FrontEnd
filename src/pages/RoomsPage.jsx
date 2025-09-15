@@ -18,6 +18,7 @@ export default function RoomsPage() {
 
   useEffect(() => {
     dispatch(fetchRoomsRequest())
+    console.log("[RoomsPage] fetchRoomsRequest start")
   }, [dispatch])
 
   useEffect(() => {

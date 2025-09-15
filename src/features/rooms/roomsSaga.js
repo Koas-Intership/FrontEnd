@@ -18,8 +18,8 @@ function* fetchRooms() {
       return;
     }
 
-    //실제
     const res = yield call(api.get('/api/meeting-room/all'));
+    console.log("[roomsSaga] rooms data: ", res.data);
     yield put(fetchRoomsSuccess(res.data));
 
   } catch (err) {

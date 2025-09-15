@@ -6,9 +6,14 @@ export const api = axios.create({
 
 // 모든 요청에 토큰 자동 첨부
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('access_token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  const url = config.url || "";
+  const isAuthPath =
+    url.includes("/api/user/login") || url.includes("/api/user/register");
+  if (!isAuthPath) {
+    const t = localStorage.getItem("access_token");
+    if (t) config.headers.Authorization = `Bearer ${t}`;
+  } else {
+    delete config.headers.Authorization;
   }
   return config;
 });

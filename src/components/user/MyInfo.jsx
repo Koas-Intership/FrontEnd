@@ -38,16 +38,12 @@ export default function MyInfo({ open, onClose, me }) {
                     labelStyle={{ width: 100, fontWeight: 600 }}
                     contentStyle={{ wordBreak: "break-all" }}
                 >
-                    <Descriptions.Item label={<><IdcardOutlined /> 아이디</>}>
-                        {field(me?.username, "—")}
-                    </Descriptions.Item>
-
                     <Descriptions.Item label={<><MailOutlined /> 이메일</>}>
                         {field(me?.email, "—")}
                     </Descriptions.Item>
 
                     <Descriptions.Item label="직함">
-                        {me?.role ? <Tag color="blue">{me.role}</Tag> : "—"}
+                        {me?.position ? <Tag color="blue">{me.position}</Tag> : "—"}
                     </Descriptions.Item>
 
                     {me?.department && (
