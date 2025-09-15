@@ -23,7 +23,7 @@ function createReservationAPI(payload) {
 }
 
 // --- 내 예약 불러오기 API ---
-function fetchMyReservationsAPI(userId) {
+function fetchMyReservationsAPI() {
   return api.get('/api/meeting-room/reservation/mine');
 }
 

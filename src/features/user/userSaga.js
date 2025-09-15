@@ -34,11 +34,15 @@ function* handleLogin(action) {
         }
 
         const res = yield call(apiLogin, { email, password });
-        const { accessToken, refreshToken, user } = res.data;
+        const { accessToken, refreshToken } = res.data;
         console.log("[userSaga] login - res.data : ", res.data);
 
         if (accessToken) localStorage.setItem("access_token", accessToken);
         if (refreshToken) localStorage.setItem("refresh_token", refreshToken);
+
+        const meRes = yield call(api.get("/api/user/me"));
+        const user = meRes.data; // {id, email, name, role...}
+        console.log("[userSaga] login - meRes.data : ", meRes.data);
 
         yield put(loginSuccess({ user: user || null, token: accessToken }));
         message.success(`${user?.name || "사용자"}님, 환영합니다!`);
