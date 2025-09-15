@@ -16,6 +16,7 @@ function apiLogin({ email, password }) {
 
 function* handleLogin(action) {
     const { email, password } = action.payload;
+    console.log("[userSaga] action.payload : ", action.payload);
     try {
         if (USE_MOCK === true) {
             yield delay(300);
