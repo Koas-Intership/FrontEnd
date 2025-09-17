@@ -9,12 +9,10 @@ const roomsSlice = createSlice({
     fetchRoomsRequest(state) {
       state.loading = true;
       state.error = null;
-      console.log("1. fetchRoomsRequest");
     },
     fetchRoomsSuccess(state, action) {
       state.loading = false;
       state.list = action.payload;
-      console.log("2. fetchRoomsSuccess");
     },
     fetchRoomsFailure(state, action) {
       state.loading = false;

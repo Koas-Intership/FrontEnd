@@ -46,6 +46,7 @@ const userSlice = createSlice({
             state.signingUp = false;
             state.me = action.payload.me ?? action.payload.user ?? null;
             state.token = action.payload.token ?? null;
+            console.log("[userSlice]", action);
         },
         signUpFailure: (state, action) => {
             state.signingUp = false;

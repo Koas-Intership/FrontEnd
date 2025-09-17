@@ -10,7 +10,6 @@ import DashboardPage from '@/pages/DashboardPage'
 import RoomsPage from '@/pages/RoomsPage'
 import ReservationsPage from '@/pages/ReservationsPage'
 import AdminPage from '@/pages/AdminPage'
-import SignupPage from './pages/SignupPage'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -29,7 +28,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               <Route path="/rooms" element={<RoomsPage />} />
               <Route path="/reservations" element={<ReservationsPage />} />
               <Route path="/admin" element={<AdminPage />} />
-              <Route path="/signup" element={<SignupPage />} />
             </Routes>
           </AppLayout>
         </BrowserRouter>

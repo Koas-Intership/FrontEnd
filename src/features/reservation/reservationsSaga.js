@@ -27,9 +27,9 @@ function fetchMyReservationsAPI() {
   return api.get('/api/meeting-room/reservation/mine');
 }
 
-// --- 전체 예약 불러오기 API ---
-function fetchAllReservationsAPI() {
-  return api.get('/api/meeting-room/reservation/all');
+// --- 예약 불러오기 API ---
+function fetchAllReservationsAPI(params) {
+  return api.get('/api/meeting-room/reservation', params);
 }
 // --- 예약 취소 API ---
 function cancelReservationAPI(reservationId) {
@@ -63,14 +63,13 @@ function* fetchMyReservationsWorker() {
     }
     const res = yield call(fetchMyReservationsAPI);
     yield put(fetchMyReservationsSuccess(res.data));
-    console.log("[reservationsSaga] 내 예약 응답:", res.data);
   } catch (err) {
     yield put(fetchMyReservationsFailure(err?.response?.data?.message || err.message));
   }
 }
 
-// --- 전체 예약 불러오기 사가 ---
-function* fetchAllReservationsWorker() {
+// --- 예약 불러오기 사가 ---
+function* fetchAllReservationsWorker(action) {
   try {
     if (USE_MOCK) {
       const mock = [
@@ -81,14 +80,16 @@ function* fetchAllReservationsWorker() {
       yield put(fetchAllReservationsSuccess(mock));
       return;
     }
-    const res = yield call(fetchAllReservationsAPI);
+
+    const params = action.payload; // { year, month, (day?) }
+    const res = yield call(fetchAllReservationsAPI, { params });
+
     yield put(fetchAllReservationsSuccess(res.data));
   } catch (err) {
     yield put(fetchAllReservationsFailure(err?.response?.data?.message || err.message));
   }
 }
 
-// --- 예약 취소 사가 ---
 // --- 예약 취소 사가 ---
 function* cancelReservationWorker(action) {
   const id = action.payload; // 취소할 예약 id

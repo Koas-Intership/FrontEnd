@@ -46,7 +46,6 @@ export default function MyReservations() {
                 }}
             >
                 {list.map((r) => {
-                    // ✅ 여기서 먼저 계산(문(statement) 가능)
                     const start = r.startAt
                         ? dayjs(r.startAt)
                         : dayjs(`${r.reservationDate} ${r.startTime}`, "YYYY-MM-DD HH:mm");
@@ -57,7 +56,6 @@ export default function MyReservations() {
                     const dateText = start.format("YYYY.MM.DD (ddd)");
                     const timeText = `${start.format("A h:mm")} ~ ${end.format("A h:mm")}`;
 
-                    // ✅ 그리고 JSX 반환
                     return (
                         <li
                             key={r.id}

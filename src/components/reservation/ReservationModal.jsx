@@ -21,7 +21,6 @@ export default function ReservationModal({ open, onClose, room }) {
             endTime: values.timeRange[1].format("HH:mm"),
             purpose: values.title,
         };
-        console.log("[UI] dispatch payload →", payload);  // ✅ 반드시 찍혀야 함
         dispatch(createReservationRequest(payload));
         onClose?.();
     };

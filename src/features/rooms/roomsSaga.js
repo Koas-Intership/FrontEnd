@@ -21,7 +21,6 @@ function* fetchRooms() {
     }
 
     const res = yield call(apiFetchRooms);
-    console.log("[roomsSaga] rooms data: ", res.data);
     yield put(fetchRoomsSuccess(res.data));
 
   } catch (err) {

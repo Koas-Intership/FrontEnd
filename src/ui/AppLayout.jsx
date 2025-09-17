@@ -5,14 +5,16 @@ import { useState, useEffect } from 'react'
 import LoginForm from '@/components/user/LoginForm'
 import MyInfo from '@/components/user/MyInfo'
 import { useSelector } from 'react-redux'
+import SignUpModal from '@/components/user/SignUpModal'
 
 const { Header, Content } = Layout
 
 export default function AppLayout({ children }) {
   const { pathname } = useLocation()
   const selectedKey = pathname === '/' ? '/' : '/' + pathname.split('/')[1]
-  const [isLoginOpen, setIsLoginOpen] = useState(false)
-  const [isInfoOpen, setIsInfoOpen] = useState(false)
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
+  const [isSignupOpen, setIsSignupOpen] = useState(false);
   const me = useSelector((s) => s.user.me)
 
   useEffect(() => {
@@ -42,8 +44,8 @@ export default function AppLayout({ children }) {
           <Menu.Item key="/admin"><Link to="/admin">관리</Link></Menu.Item>
           {!me ? (
             <>
-              <Menu.Item key="/signup" style={{ marginLeft: 'auto' }}>
-                <Link to="/signup">회원가입</Link>
+              <Menu.Item key="signup" style={{ marginLeft: 'auto' }} onClick={() => setIsSignupOpen(true)}>
+                회원가입
               </Menu.Item>
               <Menu.Item key="login" onClick={() => setIsLoginOpen(true)}>
                 로그인
@@ -68,6 +70,8 @@ export default function AppLayout({ children }) {
       {/* 모달 */}
       <LoginForm open={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
       <MyInfo open={isInfoOpen} me={me} onClose={() => setIsInfoOpen(false)} />
+      <SignUpModal open={isSignupOpen} onClose={() => setIsSignupOpen(false)} />
+
     </Layout>
   )
 }

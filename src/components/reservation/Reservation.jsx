@@ -35,10 +35,6 @@ export default function Reservation() {
         setIsReservationOpen(true);
     }
 
-    useEffect(() => {
-        if (selectedRoom) console.log('[RoomsPage] selectedRoom 변경:', selectedRoom)
-    }, [selectedRoom])
-
     const columns = [
         { title: '회의실', dataIndex: 'name', key: 'name', align: 'center' },
         {

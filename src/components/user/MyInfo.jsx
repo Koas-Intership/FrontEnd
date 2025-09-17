@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../features/user/userSlice";
 
 export default function MyInfo({ open, onClose, me }) {
+    //console.log("[MyInfo] me: ", me);
     const dispatch = useDispatch();
     const field = (v, fallback = "—") => (v === null || v === undefined || v === "" ? fallback : v);
 
@@ -39,27 +40,33 @@ export default function MyInfo({ open, onClose, me }) {
                     contentStyle={{ wordBreak: "break-all" }}
                 >
                     <Descriptions.Item label="직함">
-                        {me?.position ? <Tag color="blue">{me.position}</Tag> : "—"}
+                        {me?.position ? me.position : "—"}
                     </Descriptions.Item>
 
                     {me?.department && (
                         <Descriptions.Item label="부서">{me.department}</Descriptions.Item>
                     )}
+
                     {me?.phone && (
                         <Descriptions.Item label="연락처">{me.phone}</Descriptions.Item>
                     )}
+
+                    {me?.birthDate && (
+                        <Descriptions.Item label="생년월일">{me.birthDate}</Descriptions.Item>
+                    )}
+
                 </Descriptions>
 
                 <Divider style={{ margin: "8px 0" }} />
 
                 {/* 액션 버튼들 */}
                 <Space style={{ width: "100%" }} direction="vertical" size={8}>
-                    <Button type="primary" block onClick={onClose}>
+                    <Button block onClick={onClose}>
                         닫기
                     </Button>
                     <Button
-                        danger
                         block
+                        type="primary"
                         onClick={() => {
                             dispatch(logout());
                             onClose?.();
