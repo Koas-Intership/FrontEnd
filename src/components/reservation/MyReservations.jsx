@@ -28,13 +28,37 @@ export default function MyReservations() {
         closeCancel();
     };
 
-    if (loadingList) return <div>내 예약 불러오는 중...</div>;
-    if (listError) return <div style={{ color: 'red' }}>{listError}</div>;
-    if (!list || list.length === 0) return <div>예약이 없습니다.</div>;
+    if (loadingList) {
+        return (
+            <div style={{ padding: 20, textAlign: "center", fontSize: 16 }}>
+                ⏳ 내 예약 불러오는 중...
+            </div>
+        );
+    }
+
+    if (listError) {
+        return (
+            <div style={{
+                padding: 20,
+                textAlign: "center",
+                color: "red",
+                fontWeight: "bold"
+            }}>
+                ⚠️ 오류 발생: {listError}
+            </div>
+        );
+    }
+
+    if (!list || list.length === 0) {
+        return (
+            <div style={{ padding: 20, textAlign: "center", color: "#666" }}>
+                📭 예약이 없습니다.
+            </div>
+        );
+    }
 
     return (
         <div>
-            <h3 style={{ marginLeft: 10 }}>내 예약</h3>
             <ul
                 style={{
                     listStyle: "none",

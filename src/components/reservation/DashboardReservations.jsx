@@ -1,198 +1,242 @@
 // src/components/reservation/DashboardReservations.jsx
+import React, { useMemo } from "react";
+import styled from "styled-components";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 dayjs.extend(customParseFormat);
 dayjs.locale("ko");
 
-export default function DashboardReservations({ items = [], loading = false, error = null }) {
-    if (loading) return <div style={{ padding: 12 }}>전체 예약 불러오는 중...</div>;
-    if (error) return <div style={{ color: "red", padding: 12 }}>{error}</div>;
-    if (!items.length) return <div style={{ padding: 12 }}>예약이 없습니다.</div>;
+/* =========================
+   styled-components
+   ========================= */
+const Container = styled.div`
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  background: #fff;
+`;
 
-    const todayStr = dayjs().format("YYYY-MM-DD");
+const Header = styled.div`
+  padding: 12px 16px;
+  border-bottom: 1px solid #eef2f7;
+  background: linear-gradient(180deg, rgba(248,250,252,1) 0%, #fff 100%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const HeaderIcon = styled.div`
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #ecfeff;
+  color: #0891b2;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  border: 1px solid #cffafe;
+`;
+
+const HeaderTitle = styled.div`
+  font-weight: 700;
+`;
+
+const HeaderMeta = styled.div`
+  margin-left: auto;
+  font-size: 12px;
+  color: #6b7280;
+`;
+
+const TableWrap = styled.div`
+  overflow-x: auto;
+`;
+
+const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+
+  thead tr { background: #f8fafc; }
+  tbody tr:nth-child(even) { background: #fcfcfd; }
+`;
+
+const Th = styled.th`
+  border-bottom: 1px solid #e5e7eb;
+  padding: 10px 12px;
+  text-align: center;
+  color: #374151;
+  font-weight: 600;
+  white-space: nowrap;
+`;
+
+const Td = styled.td`
+  border-bottom: 1px solid #f3f4f6;
+  padding: 10px 12px;
+  text-align: center;
+  color: #374151;
+  white-space: ${(p) => (p.$nowrap ? "nowrap" : "normal")};
+  max-width: ${(p) => p.$maxWidth || "auto"};
+`;
+
+const PurposeText = styled.span`
+  display: inline-block;
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+`;
+
+const RoomChip = styled.span`
+  font-size: 12px;
+  background: #eef2ff;
+  border: 1px solid #e0e7ff;
+  color: #4338ca;
+  border-radius: 999px;
+  padding: 2px 8px;
+  white-space: nowrap;
+`;
+
+const ReserverCell = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+`;
+
+const ReserverName = styled.span`
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  vertical-align: middle;
+  white-space: nowrap;
+`;
+
+const TodayBadge = styled.span`
+  margin-left: 8px;
+  font-size: 11px;
+  color: #047857;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  padding: 1px 6px;
+  border-radius: 999px;
+  vertical-align: middle;
+`;
+
+const StateBox = styled.div`
+  padding: 20px;
+  text-align: center;
+  font-size: 16px;
+  color: ${(p) => (p.$error ? "red" : p.$muted ? "#666" : "inherit")};
+  font-weight: ${(p) => (p.$error ? "bold" : "normal")};
+`;
+
+/* =========================
+   component
+   ========================= */
+export default function DashboardReservations({
+    items = [],
+    loading = false,
+    error = null,
+}) {
+    if (loading) return <StateBox>⏳ 불러오는 중...</StateBox>;
+    if (error) return <StateBox $error>⚠️ 오류 발생: {error}</StateBox>;
+    if (!items.length) return <StateBox $muted>📭 예약이 없습니다.</StateBox>;
+
+    // 헤더/오늘 문자열 메모
+    const headers = useMemo(
+        () => ["회의 주제", "회의실", "예약자", "날짜", "시간"],
+        []
+    );
+    const todayStr = useMemo(() => dayjs().format("YYYY-MM-DD"), []);
+
+    // DTO 기준(useMemo): id, meetingName, purpose, reservationDate, startTime, endTime, userName
+    const rows = useMemo(() => {
+        return items.map((r, idx) => {
+            // HH:mm:ss 혹은 HH:mm 대응
+            const sfmt = (r?.startTime || "").length === 8 ? "HH:mm:ss" : "HH:mm";
+            const efmt = (r?.endTime || "").length === 8 ? "HH:mm:ss" : "HH:mm";
+
+            const start = dayjs(`${r?.reservationDate} ${r?.startTime}`, `YYYY-MM-DD ${sfmt}`);
+            const end = dayjs(`${r?.reservationDate} ${r?.endTime}`, `YYYY-MM-DD ${efmt}`);
+
+            const dateText = start.isValid()
+                ? start.format("YYYY.MM.DD (ddd)")
+                : (r?.reservationDate ?? "");
+
+            const timeText =
+                start.isValid() && end.isValid()
+                    ? `${start.format("A h:mm")} ~ ${end.format("A h:mm")}`
+                    : `${r?.startTime ?? ""} ~ ${r?.endTime ?? ""}`;
+
+            const isToday = (r?.reservationDate || "").startsWith(todayStr);
+
+            return {
+                key: r.id ?? idx,
+                purpose: r?.purpose ?? "",
+                meetingName: r?.meetingName ?? "",
+                reserverName: r?.userName ?? "—",
+                dateText,
+                timeText,
+                isToday,
+            };
+        });
+    }, [items, todayStr]);
 
     return (
-        <div
-            style={{
-                border: "1px solid #e5e7eb",
-                borderRadius: 12,
-                overflow: "hidden",
-                boxShadow: "0 6px 20px rgba(0,0,0,0.06)",
-                background: "#fff",
-            }}
-        >
-            {/* 상단 헤더 */}
-            <div
-                style={{
-                    padding: "12px 16px",
-                    borderBottom: "1px solid #eef2f7",
-                    background:
-                        "linear-gradient(180deg, rgba(248,250,252,1) 0%, rgba(255,255,255,1) 100%)",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 8,
-                }}
-            >
-                <div
-                    style={{
-                        width: 28,
-                        height: 28,
-                        borderRadius: 8,
-                        background: "#ecfeff",
-                        color: "#0891b2",
-                        display: "grid",
-                        placeItems: "center",
-                        fontSize: 16,
-                        border: "1px solid #cffafe",
-                    }}
-                >
-                    📅
-                </div>
-                <div style={{ fontWeight: 700 }}>전체 예약</div>
-                <div style={{ marginLeft: "auto", fontSize: 12, color: "#6b7280" }}>
-                    총 {items.length}건
-                </div>
-            </div>
+        <Container>
+            <Header>
+                <HeaderIcon>📅</HeaderIcon>
+                <HeaderTitle>전체 예약</HeaderTitle>
+                <HeaderMeta>총 {rows.length}건</HeaderMeta>
+            </Header>
 
-            {/* 표 */}
-            <div style={{ overflowX: "auto" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+            <TableWrap>
+                <Table>
                     <thead>
-                        <tr style={{ background: "#f8fafc" }}>
-                            {["회의 주제", "회의실", "날짜", "시간"].map((h) => (
-                                <th
-                                    key={h}
-                                    style={{
-                                        borderBottom: "1px solid #e5e7eb",
-                                        padding: "10px 12px",
-                                        textAlign: "center",
-                                        color: "#374151",
-                                        fontWeight: 600,
-                                    }}
-                                >
-                                    {h}
-                                </th>
+                        <tr>
+                            {headers.map((h) => (
+                                <Th key={h}>{h}</Th>
                             ))}
                         </tr>
                     </thead>
+
                     <tbody>
-                        {items.map((r, idx) => {
-                            // 시간 파싱 (startAt/endAt 우선)
-                            const timeFmt =
-                                (r?.startTime || "").length === 8 ? "HH:mm:ss" : "HH:mm";
-                            const start = r?.startAt
-                                ? dayjs(r.startAt)
-                                : dayjs(`${r?.reservationDate} ${r?.startTime}`, `YYYY-MM-DD ${timeFmt}`);
-                            const end = r?.endAt
-                                ? dayjs(r.endAt)
-                                : dayjs(`${r?.reservationDate} ${r?.endTime}`, `YYYY-MM-DD ${timeFmt}`);
+                        {rows.map((row) => (
+                            <tr key={row.key}>
+                                {/* 회의 주제 */}
+                                <Td $maxWidth="280px">
+                                    <PurposeText title={row.purpose}>{row.purpose}</PurposeText>
+                                </Td>
 
-                            const dateText = start.isValid()
-                                ? start.format("YYYY.MM.DD (ddd)")
-                                : r?.reservationDate ?? "";
+                                {/* 회의실 */}
+                                <Td>
+                                    <RoomChip>{row.meetingName}</RoomChip>
+                                </Td>
 
-                            const timeText =
-                                start.isValid() && end.isValid()
-                                    ? `${start.format("A h:mm")} ~ ${end.format("A h:mm")}`
-                                    : `${r?.startTime ?? ""} ~ ${r?.endTime ?? ""}`;
+                                {/* 예약자 */}
+                                <Td title={row.reserverName} $nowrap>
+                                    <ReserverCell>
+                                        <ReserverName>{row.reserverName}</ReserverName>
+                                    </ReserverCell>
+                                </Td>
 
-                            const isToday = (r?.reservationDate || "").startsWith(todayStr);
+                                {/* 날짜 */}
+                                <Td $nowrap>
+                                    {row.dateText}
+                                    {row.isToday && <TodayBadge>오늘</TodayBadge>}
+                                </Td>
 
-                            return (
-                                <tr
-                                    key={r.id ?? idx}
-                                    style={{
-                                        background: idx % 2 ? "#ffffff" : "#fcfcfd",
-                                    }}
-                                >
-                                    <td
-                                        style={{
-                                            borderBottom: "1px solid #f3f4f6",
-                                            padding: "10px 12px",
-                                            textAlign: "center",
-                                            maxWidth: 280,
-                                        }}
-                                        title={r?.purpose}
-                                    >
-                                        <span
-                                            style={{
-                                                display: "inline-block",
-                                                maxWidth: 240,
-                                                overflow: "hidden",
-                                                textOverflow: "ellipsis",
-                                                whiteSpace: "nowrap",
-                                                verticalAlign: "middle",
-                                            }}
-                                        >
-                                            {r?.purpose}
-                                        </span>
-                                    </td>
-                                    <td
-                                        style={{
-                                            borderBottom: "1px solid #f3f4f6",
-                                            padding: "10px 12px",
-                                            textAlign: "center",
-                                        }}
-                                    >
-                                        <span
-                                            style={{
-                                                fontSize: 12,
-                                                background: "#eef2ff",
-                                                border: "1px solid #e0e7ff",
-                                                color: "#4338ca",
-                                                borderRadius: 999,
-                                                padding: "2px 8px",
-                                                whiteSpace: "nowrap",
-                                            }}
-                                        >
-                                            {r?.meetingName}
-                                        </span>
-                                    </td>
-                                    <td
-                                        style={{
-                                            borderBottom: "1px solid #f3f4f6",
-                                            padding: "10px 12px",
-                                            textAlign: "center",
-                                            color: "#374151",
-                                            whiteSpace: "nowrap",
-                                        }}
-                                    >
-                                        {dateText}
-                                        {isToday && (
-                                            <span
-                                                style={{
-                                                    marginLeft: 8,
-                                                    fontSize: 11,
-                                                    color: "#047857",
-                                                    background: "#ecfdf5",
-                                                    border: "1px solid #a7f3d0",
-                                                    padding: "1px 6px",
-                                                    borderRadius: 999,
-                                                    verticalAlign: "middle",
-                                                }}
-                                            >
-                                                오늘
-                                            </span>
-                                        )}
-                                    </td>
-                                    <td
-                                        style={{
-                                            borderBottom: "1px solid #f3f4f6",
-                                            padding: "10px 12px",
-                                            textAlign: "center",
-                                            color: "#374151",
-                                            whiteSpace: "nowrap",
-                                        }}
-                                    >
-                                        {timeText /* 예: 오전 9:00 ~ 오전 10:00 */}
-                                    </td>
-                                </tr>
-                            );
-                        })}
+                                {/* 시간 */}
+                                <Td $nowrap>{row.timeText}</Td>
+                            </tr>
+                        ))}
                     </tbody>
-                </table>
-            </div>
-        </div>
+                </Table>
+            </TableWrap>
+        </Container>
     );
 }

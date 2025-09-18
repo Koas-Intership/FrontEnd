@@ -1,15 +1,31 @@
+// src/features/user/userSaga.js
 import { call, put, takeLatest, delay } from "redux-saga/effects";
-import axios from "axios";
 import { message } from "antd";
-import { loginRequest, loginSuccess, loginFailure, logout, signUpRequest, signUpSuccess, signUpFailure, } from "./userSlice";
+import {
+    loginRequest, loginSuccess, loginFailure, logout,
+    signUpRequest, signUpSuccess, signUpFailure,
+    changingPasswordRequest, changingPasswordSuccess, changingPasswordFailure,
+    bootstrapRequest, bootstrapSuccess, bootstrapFailure,
+} from "./userSlice";
 import { api } from "../../lib/api";
 
-// axios 기본 설정 (쿠키 세션 쓰면 withCredentials true)
-axios.defaults.withCredentials = false;
-
+// 로컬스토리지 키 통일
+const ACCESS_KEY = "access_token";
+const REFRESH_KEY = "refresh_token";
 const USE_MOCK = false;
 
-/// --- 로그인 ---
+// Authorization 헤더 세팅 유틸
+function setAuthHeader(token) {
+    if (token) api.defaults.headers.common.Authorization = `Bearer ${token}`;
+    else delete api.defaults.headers.common.Authorization;
+}
+
+//에러 메시지 추출
+function getErrMsg(err, fallback) {
+    return err?.response?.data?.message || err?.message || fallback;
+}
+
+/** --- 로그인 --- */
 function apiLogin({ email, password }) {
     return api.post(
         "/api/user/login",
@@ -21,110 +37,170 @@ function apiLogin({ email, password }) {
 function* handleLogin(action) {
     try {
         const { email, password } = action.payload;
+
         if (USE_MOCK) {
             yield delay(300);
-            const user = { name: email.split('@')[0], email, role: "사원" };
+            const user = { name: email.split("@")[0], email, role: "사원" };
             const token = "dev-mock-token";
+            setAuthHeader(token);
+            localStorage.setItem(ACCESS_KEY, token);
             yield put(loginSuccess({ user, token }));
             message.success(`${user.name}님, 환영합니다!`);
             return;
         }
 
         const res = yield call(apiLogin, { email, password });
-        const { accessToken, refreshToken } = res.data;
+        const data = res?.data || {};
+        const accessToken = data.accessToken || data.token || null;
+        const refreshToken = data.refreshToken || null;
 
-        if (accessToken) localStorage.setItem("access_token", accessToken);
-        if (refreshToken) localStorage.setItem("refresh_token", refreshToken);
+        if (accessToken) {
+            setAuthHeader(accessToken);
+            localStorage.setItem(ACCESS_KEY, accessToken);
+        }
+        if (refreshToken) {
+            localStorage.setItem(REFRESH_KEY, refreshToken);
+        }
 
-        //내 정보 가져오기
+        // 내 정보 조회
         const meRes = yield call([api, api.get], "/api/user/me");
-        const user = meRes.data; // {id, email, name, role...}
-        console.log("[userSaga] 서버 응답 - user:", user);
+        const user = meRes?.data || null;
 
-        yield put(loginSuccess({ user: user || null, token: accessToken }));
+        yield put(loginSuccess({ user, token: accessToken }));
         message.success(`${user?.name || "사용자"}님, 환영합니다!`);
-
     } catch (err) {
-        const msg = err?.response?.data?.message || err?.message || "아이디 또는 비밀번호를 확인해 주세요.";
-        yield put(loginFailure(msg));
+        const msg = getErrMsg(err, "아이디 또는 비밀번호를 확인해 주세요.");
         yield put(loginFailure(msg));
         message.error(msg);
     }
 }
 
-// --- 회원가입 ---
+/** --- 회원가입 --- */
 function apiSignUp(form) {
-    //console.log('[userSaga] form', form);
     return api.post("/api/user/register", form);
-}
-
-function setAuthHeader(token) {
-    if (token) api.defaults.headers.common.Authorization = `Bearer ${token}`;
-    else delete api.defaults.headers.common.Authorization;
 }
 
 function* handleSignUp(action) {
     try {
         if (USE_MOCK) {
             yield delay(300);
-            const user = { name: action.payload.name || "신규 사용자", email: action.payload.email, role: "사원" };
+            const user = {
+                name: action.payload.name || "신규 사용자",
+                email: action.payload.email,
+                role: "사원",
+            };
             const token = "dev-mock-token-signup";
             setAuthHeader(token);
-            localStorage.setItem("accessToken", token);
+            localStorage.setItem(ACCESS_KEY, token);
             yield put(signUpSuccess({ user, token }));
             message.success("회원가입이 완료되었습니다.");
             return;
         }
 
         // 1) 회원가입
-        const signUpRes = yield call(apiSignUp, action.payload);
+        yield call(apiSignUp, action.payload);
 
-        // 2) 로그인
+        // 2) 바로 로그인
         const { email, password } = action.payload;
         const loginRes = yield call(apiLogin, { email, password });
         const loginData = loginRes?.data || {};
+        const accessToken = loginData.accessToken || loginData.token || null;
+        const refreshToken = loginData.refreshToken || null;
 
-        let accessToken = loginData.token || loginData.accessToken || null;
-        let refreshToken = loginData.refreshToken || null;
-        let me = loginData.user || null;
-
-        // 3) 토큰 세팅(있을 때만)
         if (accessToken) {
             setAuthHeader(accessToken);
-            localStorage.setItem("accessToken", accessToken);
-            if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
+            localStorage.setItem(ACCESS_KEY, accessToken);
+        }
+        if (refreshToken) {
+            localStorage.setItem(REFRESH_KEY, refreshToken);
         }
 
-        // 4) 내 정보 가져오기
+        // 3) 내 정보 조회
+        let me = loginData.user || null;
         if (!me) {
-            try {
-                const meRes = yield call([api, api.get], "/api/user/me");
-                me = meRes?.data || null;
-            } catch (_) {
-            }
+            const meRes = yield call([api, api.get], "/api/user/me");
+            me = meRes?.data || null;
         }
 
-        // 5) 스토어 업데이트: 가입 성공 + 로그인 성공(me 채워 넣기)
+        // 4) 스토어 갱신
         yield put(signUpSuccess({ user: me, token: accessToken }));
-        yield put(loginSuccess({ token: accessToken, me }));
+        yield put(loginSuccess({ user: me, token: accessToken }));
 
         message.success("회원가입이 완료되었습니다.");
     } catch (err) {
-        const msg = err?.response?.data?.message || err?.message || "회원가입에 실패했습니다.";
+        const msg = getErrMsg(err, "회원가입에 실패했습니다.");
         yield put(signUpFailure(msg));
         message.error(msg);
     }
 }
 
-// --- 로그아웃 ---
+/** --- 로그아웃 --- */
 function* handleLogout() {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
+    setAuthHeader(null);
+    localStorage.removeItem(ACCESS_KEY);
+    localStorage.removeItem(REFRESH_KEY);
 
+}
+
+/** --- 비밀번호 변경 --- */
+function apiChangePassword(payload) {
+    console.log("[userSaga] apiChangePassword: ", payload);
+    return api.patch("/api/user/change-password", payload);
+}
+
+function* handleChangingPassword(action) {
+    try {
+        const { newPassword } = action.payload;
+        yield call(apiChangePassword, { newPassword });
+
+        yield put(changingPasswordSuccess());
+        message.success("비밀번호가 변경되었습니다.");
+
+    } catch (err) {
+        const msg = getErrMsg(err, "비밀번호 변경에 실패했습니다.");
+        yield put(changingPasswordFailure(msg));
+        message.error(msg);
+    }
+}
+
+// --- 부트스트랩(새로고침 복구) ---
+function* handleBootstrap() {
+    try {
+        const token = localStorage.getItem('access_token');
+        const cachedMe = localStorage.getItem('me');
+
+        // 토큰/캐시 둘 다 없으면 그냥 부트 종료
+        if (!token && !cachedMe) {
+            yield put(bootstrapSuccess());
+            return;
+        }
+
+        // 1순위: 서버 me 동기화
+        try {
+            const meRes = yield call([api, api.get], '/api/user/me');
+            const me = meRes?.data || null;
+            localStorage.setItem('me', JSON.stringify(me || {}));
+            yield put(loginSuccess({ me, token }));
+            yield put(bootstrapSuccess());
+            return;
+        } catch (_) {
+            // 2순위: 서버 실패 → 캐시로 복구
+            if (cachedMe) {
+                const me = JSON.parse(cachedMe);
+                yield put(loginSuccess({ me, token }));
+            }
+            yield put(bootstrapSuccess());
+            return;
+        }
+    } catch (e) {
+        yield put(bootstrapFailure());
+    }
 }
 
 export default function* userSaga() {
     yield takeLatest(loginRequest.type, handleLogin);
     yield takeLatest(signUpRequest.type, handleSignUp);
     yield takeLatest(logout.type, handleLogout);
+    yield takeLatest(changingPasswordRequest.type, handleChangingPassword);
+    yield takeLatest(bootstrapRequest.type, handleBootstrap);
 }

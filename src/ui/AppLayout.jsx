@@ -6,6 +6,8 @@ import LoginForm from '@/components/user/LoginForm'
 import MyInfo from '@/components/user/MyInfo'
 import { useSelector } from 'react-redux'
 import SignUpModal from '@/components/user/SignUpModal'
+import { Outlet } from 'react-router-dom'
+import PasswordChangeModal from '@/components/user/PasswordChangeModal'
 
 const { Header, Content } = Layout
 
@@ -15,6 +17,7 @@ export default function AppLayout({ children }) {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [isSignupOpen, setIsSignupOpen] = useState(false);
+  const [pwOpen, setPwOpen] = useState(false);
   const me = useSelector((s) => s.user.me)
 
   useEffect(() => {
@@ -36,21 +39,16 @@ export default function AppLayout({ children }) {
           theme='light'
           mode="horizontal"
           selectedKeys={[selectedKey]}
-          style={{ flex: 1, borderBottom: 'none', marginLeft: '10%' }}
+          style={{ flex: 1, borderBottom: 'none', marginLeft: '1%' }}
         >
-          <Menu.Item key="/"><Link to="/">대시보드</Link></Menu.Item>
+          <Menu.Item key="/main"><Link to="/main">대시보드</Link></Menu.Item>
           <Menu.Item key="/rooms"><Link to="/rooms">회의실</Link></Menu.Item>
           <Menu.Item key="/reservations"><Link to="/reservations">예약</Link></Menu.Item>
-          <Menu.Item key="/admin"><Link to="/admin">관리</Link></Menu.Item>
+
           {!me ? (
-            <>
-              <Menu.Item key="signup" style={{ marginLeft: 'auto' }} onClick={() => setIsSignupOpen(true)}>
-                회원가입
-              </Menu.Item>
-              <Menu.Item key="login" onClick={() => setIsLoginOpen(true)}>
-                로그인
-              </Menu.Item>
-            </>
+            <Menu.Item key="login" onClick={() => setIsLoginOpen(true)} style={{ marginLeft: 'auto' }}>
+              로그인
+            </Menu.Item>
           ) : (
             <>
               <Menu.Item
@@ -64,14 +62,26 @@ export default function AppLayout({ children }) {
           )}
         </Menu>
       </Header>
-
-      <Content style={{ padding: 24 }}>{children}</Content>
+      <div style={{ padding: 24 }} >
+        <Outlet />
+      </div>
 
       {/* 모달 */}
       <LoginForm open={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
-      <MyInfo open={isInfoOpen} me={me} onClose={() => setIsInfoOpen(false)} />
-      <SignUpModal open={isSignupOpen} onClose={() => setIsSignupOpen(false)} />
-
+      <MyInfo
+        open={isInfoOpen}
+        onClose={() => setIsInfoOpen(false)}
+        me={me}
+        onResetPassword={() => {
+          setIsInfoOpen(false);
+          setTimeout(() => setPwOpen(true), 0); // 자연스러운 전환
+        }}
+      />
+      <PasswordChangeModal
+        open={pwOpen}
+        onClose={() => setPwOpen(false)}
+        onSuccess={() => setPwOpen(false)}
+      />
     </Layout>
   )
 }

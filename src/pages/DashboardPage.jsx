@@ -8,6 +8,7 @@ import { fetchAllReservationsRequest } from "@/features/reservation/reservations
 export default function DashboardPage() {
   const dispatch = useDispatch();
   const { all, loadingAll, allError } = useSelector((s) => s.reservations);
+  console.log('all', all);
 
   // 오늘 기준을 렌더 간 고정
   const nowRef = useRef(new Date());
@@ -66,7 +67,6 @@ export default function DashboardPage() {
             options={months.map((m) => ({ label: `${m}월`, value: m }))}
             style={{ width: 100 }}
           />
-          {/* ✅ 일자: 기본은 미선택(전체). allowClear로 '전체' 상태 전환 가능 */}
           <Select
             allowClear
             placeholder="전체"

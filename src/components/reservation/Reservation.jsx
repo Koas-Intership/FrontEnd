@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Button, Table, Space, message } from 'antd'
-import { fetchRoomsRequest } from '@/features/rooms/roomsSlice'
+
 import ReservationModal from '@/components/reservation/ReservationModal'
 
 export default function Reservation() {
@@ -11,14 +11,6 @@ export default function Reservation() {
     const { me } = useSelector((s) => s.user)
     const [isReservationOpen, setIsReservationOpen] = useState(false);
     const [selectedRoom, setSelectedRoom] = useState(null)
-
-    //로그
-    console.log("[RoomsPage]reservation: ", list);
-    console.log("[RoomsPage]me: ", me);
-
-    useEffect(() => {
-        dispatch(fetchRoomsRequest())
-    }, [dispatch])
 
     useEffect(() => {
         if (error) message.error(error)
@@ -58,13 +50,6 @@ export default function Reservation() {
 
     return (
         <div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <h3 style={{ marginLeft: 10 }}>회의실 목록</h3>
-                <Button onClick={() => dispatch(fetchRoomsRequest())} loading={loading} style={{ border: 'none', backgroundColor: 'none' }}>
-                    새로고침
-                </Button>
-            </div>
-
             <Table rowKey="id" columns={columns} dataSource={list} loading={loading} />
             <ReservationModal open={isReservationOpen} onClose={() => setIsReservationOpen(false)} room={selectedRoom} />
         </div>
